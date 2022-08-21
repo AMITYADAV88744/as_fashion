@@ -1,11 +1,14 @@
 
+import 'package:as_fashion/Screen/FeedBack&Suggestion/Feedback&Suggestion.dart';
 import 'package:as_fashion/Screen/My_Account/My_Account.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../Screen/LoginPage/Login_Screen.dart';
+import '../Screen/MainScreen/MainScreenPage.dart';
 import '../Screen/MyWishListPage.dart';
 import '../Screen/My_Address/My_Address.dart';
 import '../Screen/My_Order/My_Order_Page.dart';
@@ -26,7 +29,7 @@ class _MyMenuState extends State<MyMenu>  {
    greeting() {
     var hour = DateTime.now().hour;
 
-    if (hour <= 12) {
+    if (hour < 12) {
       return const Text("Good Morning",
         style: TextStyle(
             fontSize: 20,
@@ -34,7 +37,7 @@ class _MyMenuState extends State<MyMenu>  {
             color: Colors.black
         ),
       );
-    } else if ((hour > 12) && (hour <= 16)) {
+    } else if ((hour >=12) && (hour <= 16)) {
       return const Text(
           "Good Afternoon",
         style: TextStyle(
@@ -78,8 +81,12 @@ class _MyMenuState extends State<MyMenu>  {
               child: Column(
                 children: [
                   Container(
-                      padding: const EdgeInsets.all(20),
-                      color: Colors.white,
+                    decoration: const BoxDecoration(
+                    color: Colors.amber
+                    ),
+                      height: 150,
+                      padding: const EdgeInsets.fromLTRB(20,20,20,0),
+                      //color: Colors.white,
                       child:ListView(
                         physics: const NeverScrollableScrollPhysics(),
                         scrollDirection: Axis.vertical,
@@ -94,7 +101,7 @@ class _MyMenuState extends State<MyMenu>  {
                               },
                               child:const Text("Login / Signup",
                                 style:TextStyle(
-                                  color: Colors.grey,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 19,
                                 ),
@@ -105,54 +112,58 @@ class _MyMenuState extends State<MyMenu>  {
                                  .doc(FirebaseAuth.instance.currentUser!.uid).snapshots(includeMetadataChanges: false),
                              builder: (context,AsyncSnapshot<DocumentSnapshot>snapshotdata){
                                if(snapshotdata.data?.exists==true){
-                                 return Row(
-                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                   children: [
-                                     CircleAvatar(
-                                       radius: 35,
-                                       child: ClipOval(
-                                         child: snapshotdata.data?.get("image").isEmpty==true ?
-                                         Image.asset("assets/avtar_team.png",
-                                           height: 150,
-                                           width: 150,
-                                           fit: BoxFit.fitHeight,
-                                         ) : Image.network(snapshotdata.data?.get("image"),
-                                           width: 150,
-                                           height: 150,
-                                           fit: BoxFit.cover,
+                                 return Container(
+                                   padding: EdgeInsets.all(10),
+
+                                   child: Row(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                       CircleAvatar(
+                                         radius: 30,
+                                         child: ClipOval(
+                                           child: snapshotdata.data?.get("image")==null ?
+                                           Image.asset("assets/avtar_team.png",
+                                             height: 150,
+                                             width: 150,
+                                             fit: BoxFit.fitHeight,
+                                           ) : Image.network(snapshotdata.data?.get("image"),
+                                             width: 150,
+                                             height: 150,
+                                             fit: BoxFit.cover,
+                                           ),
                                          ),
                                        ),
-                                     ),
 
-                                    Padding(padding: const EdgeInsets.all(15),
-                                    child:Center(
-                                      child: Column(
-                                        mainAxisAlignment:MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            snapshotdata.data?.get("name"),
-                                            style: const TextStyle(
-                                                fontSize: 23,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black
-                                            ),
-                                          ),
+                                       Padding(padding: const EdgeInsets.fromLTRB(15,0,15,0),
+                                         child:Center(
+                                             child: Column(
+                                               mainAxisAlignment:MainAxisAlignment.start,
+                                               crossAxisAlignment: CrossAxisAlignment.start,
+                                               children: [
+                                                 Text(
+                                                   snapshotdata.data?.get("name"),
+                                                   style: const TextStyle(
+                                                       fontSize: 18,
+                                                       fontWeight: FontWeight.normal,
+                                                       color: Colors.black
+                                                   ),
+                                                 ),
 
-                                          Text(
-                                            snapshotdata.data?.get("phone"),
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ) ,
-                                    )
+                                                 Text(
+                                                   snapshotdata.data?.get("phone"),
+                                                   style: const TextStyle(
+                                                       fontSize: 18,
+                                                       fontWeight: FontWeight.normal,
+                                                       color: Colors.black
+                                                   ),
+                                                 ),
+                                               ],
+                                             )
+                                         ) ,
+                                       )
 
-                                   ],
+                                     ],
+                                   ),
                                  );
                                }
                                return  Row(
@@ -179,7 +190,7 @@ class _MyMenuState extends State<MyMenu>  {
                                              style: TextStyle(
                                                  fontSize: 20,
                                                  fontWeight: FontWeight.bold,
-                                                 color: Colors.blueAccent
+                                                 color: Colors.amber
                                              ),
                                            ),
                                        )
@@ -213,15 +224,31 @@ class _MyMenuState extends State<MyMenu>  {
                             fontSize: 15,
                           ),),
                         const Padding(padding: EdgeInsets.all(10)),
-                        const Text("MEN",
-                          style:TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                        InkWell(
+                          onTap: (){
+
+                          },
+                          child:   const Text("MEN",
+                            style:TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
-                       const  Padding(padding: EdgeInsets.all(10)),
-                        Row(
+                        const  Padding(padding: EdgeInsets.all(10)),
+                        InkWell(
+                         onTap: (){
+                         },
+                         child:    const Text("Accessories",
+                           style:TextStyle(
+                             color: Colors.black,
+                             fontWeight: FontWeight.bold,
+                             fontSize: 15,
+                           ),
+                         ),
+                       ),
+                      /*  Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children:  [
@@ -235,7 +262,8 @@ class _MyMenuState extends State<MyMenu>  {
                             Image.asset("assets/commingsoon.jpg",height: 35, width: 45,)
                           ]
                         ),
-                        Padding(padding: const EdgeInsets.all(10)),
+                        */
+                        const Padding(padding: EdgeInsets.all(10)),
                       ],
                     ),
                   ),
@@ -382,21 +410,28 @@ class _MyMenuState extends State<MyMenu>  {
                           ) ,
                         ),
                         const Padding(padding: EdgeInsets.all(8)),
-                        const Text("Feedback & Suggestion",
-                          style:TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                        InkWell(
+                          onTap: (){
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) => const ReachUs()));
+                            },
+                          child: const Text("Feedback & Suggestion",
+                            style:TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
-                        const Padding(padding: EdgeInsets.all(8)),
-                        const Text("Become Seller",
+                      //  const Padding(padding: EdgeInsets.all(8)),
+                       /* const Text("Become Seller",
                           style:TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
                         ),
+                        */
                       ],
                     ),
                   ),

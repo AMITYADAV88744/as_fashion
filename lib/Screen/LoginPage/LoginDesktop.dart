@@ -1,6 +1,7 @@
 
 //...
 
+import 'package:as_fashion/Screen/MainScreen/MainScreenPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ class LoginDesktop extends StatelessWidget {
         child: Column(
           children: [
              Header(),
+            const Padding(padding: EdgeInsets.all(30)),
             Row(
               children: [
                 Expanded( //<-- Expanded widget
@@ -87,12 +89,13 @@ class LoginDesktop extends StatelessWidget {
                           width: 380,
                           height: 50,
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.pinkAccent),
+                              border: Border.all(color: Colors.amber
+                              ),
                               borderRadius: BorderRadius.circular(10)
                           ),
                           child: TextButton(
                               style: TextButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent,
+                                backgroundColor: Colors.amber,
                                 textStyle: const TextStyle(color: Colors.white),
                               ),
                               child: const Text('CONTINUE ',
@@ -119,7 +122,7 @@ class LoginDesktop extends StatelessWidget {
                             endIndent: 10,
                           ),
                         ),
-                        const Padding(padding: EdgeInsets.all(10)),
+                       /* const Padding(padding: EdgeInsets.all(10)),
 
                         Container(
                             width: 380,
@@ -143,6 +146,8 @@ class LoginDesktop extends StatelessWidget {
                               ],
                             )
                         ),
+
+                        */
                         const Padding(padding: EdgeInsets.all(15)),
                         const SizedBox(
                             width: 380,
@@ -176,7 +181,10 @@ class LoginDesktop extends StatelessWidget {
 
           }
       ).whenComplete(() =>{
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LandingPage())),
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(
+              builder: (context) =>  MainScreenPage()
+          )),
       });
 
     }

@@ -45,7 +45,6 @@ class _LoginMobileState extends State<LoginMobile> {
       verificationFailed: verificationFailed,
       codeSent: codeSent,
       codeAutoRetrievalTimeout: (String verificationId) {},
-
     );
   }
 
@@ -112,12 +111,12 @@ class _LoginMobileState extends State<LoginMobile> {
                     width: 380,
                     height: 50,
                     decoration:BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent),
+                        border: Border.all(color: Colors.amber),
                         borderRadius: BorderRadius.circular(10)
                     ),
                     child:TextButton(
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
+                          backgroundColor: Colors.amber,
                           textStyle: const TextStyle(color: Colors.white),
                         ),
                         child:const Text('CONTINUE ',
@@ -177,7 +176,7 @@ class _LoginMobileState extends State<LoginMobile> {
                   const SizedBox(
                     width: 380,
                     child: Text("By creating an account or logging in, you agree with AS Fashion's Terms and Conditions and Privacy Policy",
-                      maxLines: 2,
+                      maxLines: 3,
                     ),
                   ),
                 ],
@@ -188,59 +187,56 @@ class _LoginMobileState extends State<LoginMobile> {
       ),
     );
 
-    var bodyProgress = Container(
-      child: Stack(
-        children: <Widget>[
-          body,
-          Container(
-            alignment: AlignmentDirectional.center,
-            decoration: const BoxDecoration(
-              color: Colors.white70,
+    var bodyProgress = Stack(
+      children: <Widget>[
+        body,
+        Container(
+          alignment: AlignmentDirectional.center,
+          decoration: const BoxDecoration(
+            color: Colors.white70,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.amber[200],
+                borderRadius: BorderRadius.circular(10.0)
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.blue[200],
-                  borderRadius: BorderRadius.circular(10.0)
-              ),
-              width: 150.0,
-              height: 100.0,
-              alignment: AlignmentDirectional.center,
-              child:  Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Center(
-                    child:  SizedBox(
-                      height: 50.0,
-                      width: 50.0,
-                      child:  CircularProgressIndicator(
-                        value: null,
-                        strokeWidth: 7.0,
+            width: 150.0,
+            height: 100.0,
+            alignment: AlignmentDirectional.center,
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Center(
+                  child:  SizedBox(
+                    height: 50.0,
+                    width: 50.0,
+                    child:  CircularProgressIndicator(
+                      value: null,
+                      strokeWidth: 7.0,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 25.0),
+                  child:  const Center(
+                    child:  Text(
+                      "loading.. wait...",
+                      style:  TextStyle(
+                          color: Colors.white
                       ),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 25.0),
-                    child:  const Center(
-                      child:  Text(
-                        "loading.. wait...",
-                        style:  TextStyle(
-                            color: Colors.white
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           leading:IconButton(
             onPressed:(){
               Navigator.pushReplacement(
@@ -248,7 +244,7 @@ class _LoginMobileState extends State<LoginMobile> {
               ));},
             icon:const Icon(
               Icons.arrow_back_ios_rounded,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           title: const Text('A.S Fashion',style: TextStyle(color: Colors.black),),

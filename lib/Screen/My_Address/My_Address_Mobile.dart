@@ -1,6 +1,5 @@
 
-import 'package:as_fashion/Screen/MyShoppingCart/MyCartPage.dart';
-import 'package:as_fashion/Screen/My_Address/My_Address.dart';
+import 'package:as_fashion/api_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +20,6 @@ class MyAddressMobile extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         leading:  IconButton(
           onPressed:(){
             Navigator.pushReplacement(
@@ -30,7 +28,7 @@ class MyAddressMobile extends StatelessWidget {
           },
           icon:  const Icon(
             Icons.arrow_back_ios_rounded,
-            color: Colors.grey,
+            color: Colors.black,
           ),
         ),
         title: const Text('My Address',
@@ -47,14 +45,14 @@ class MyAddressMobile extends StatelessWidget {
               },
               child: const Icon(Icons.add,
                 size: 30,
-                color: Colors.blueAccent,
+                color: Colors.black,
               ),
             ),
           ),
         ],
       ),
       body:StreamBuilder<QuerySnapshot>(
-        stream:addRef.collection(FirebaseAuth.instance.currentUser!.uid).snapshots() ,
+        stream:addRef.collection(FirebaseAuth.instance.currentUser!.uid).orderBy("primary",descending: true).snapshots() ,
         builder: (context,snapshot){
           if(snapshot.connectionState==ConnectionState.waiting){
             return const Center(
@@ -65,7 +63,7 @@ class MyAddressMobile extends StatelessWidget {
 
              if(snapshot.data?.docs.isEmpty==true){
               return Padding(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(10),
                   child: GestureDetector(
                     onTap: (){
                       Navigator.pushReplacement(
@@ -73,14 +71,14 @@ class MyAddressMobile extends StatelessWidget {
                       ));
                     },
                     child: Container(
-                      height: 250,
+                      height: 280,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           border: Border.all(
                               color: Colors.grey
                           ),
                           borderRadius: BorderRadius
-                              .circular(1)
+                              .circular(10)
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,10 +103,11 @@ class MyAddressMobile extends StatelessWidget {
               );
             }
             else{
-
               return ListView.builder(
+                shrinkWrap: true,
                   itemCount: snapshot.data?.docs.length,
                   itemBuilder: (context,index){
+                  var name=snapshot.data?.docs[index]["name"];
                     var addressid=snapshot.data?.docs[index]["addressid"];
                     var flatno=snapshot.data?.docs[index]["flatno"];
                     var address=snapshot.data?.docs[index]["address"];
@@ -119,28 +118,75 @@ class MyAddressMobile extends StatelessWidget {
                     var primary=snapshot.data?.docs[index]["primary"];
                     var trues="true";
                     return Padding(
-                      padding: const EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         children: [
                           Container(
-                            height: 205,
-                            padding: const EdgeInsets.all(20),
+                            height: 280,
+                            padding: const EdgeInsets.fromLTRB(20,20,20,11),
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 border: Border.all(
                                     color: Colors.grey
                                 ),
                                 borderRadius: BorderRadius
-                                    .circular(1)
+                                    .circular(10)
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
+                                primary==trues ?
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text("Default : ",
+                                      style:TextStyle(
+                                        fontSize: 15,
+                                          color: Colors.grey
+                                      ),
+                                    ),
+                                    Padding(padding: EdgeInsets.all(5)),
+                                    Divider(
+                                      color: Colors.grey,
+                                      height: 3,
+                                      thickness: 1,
+                                      indent: 3,
+                                    )
+                                  ],
+                                ):Visibility(
+                                    visible:false  ,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: const [
+                                        Text("Default : ",
+                                          style:TextStyle(
+                                              color: Colors.grey
+                                          ),
+                                        ),
+                                        Divider(
+                                          color: Colors.amber,
+                                          height: 3,
+                                          thickness: 3,
+                                          indent: 3,
+                                        )
+                                      ],
+                                    )
+                                ),
+                                const Padding(padding: EdgeInsets.all(5)),
+                                Text(name,
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const Padding(padding: EdgeInsets.all(5)),
                                 Text(flatno+" "+address+" "+locality,
                                   maxLines: 2,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -148,14 +194,14 @@ class MyAddressMobile extends StatelessWidget {
                                   children: [
                                     Text(city,
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 18,
                                         color: Colors.black,
                                       ),
                                     ),
                                     const Padding(padding: EdgeInsets.only(left: 5)),
                                     Text(state,
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 18,
                                         color: Colors.black,
                                       ),
                                     ),
@@ -163,87 +209,96 @@ class MyAddressMobile extends StatelessWidget {
                                 ),
                                 Text(pincode,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     color: Colors.black,
                                   ),
                                 ),
+                                const Padding(padding: EdgeInsets.all(10)),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
 
-                                primary==trues
-                                    ? const Text("Primary Address",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.grey
-                                  ),
-                                ):TextButton(
-                                    onPressed:() async{
-                                      var collection = FirebaseFirestore.instance
-                                          .collection('Address').doc(FirebaseAuth.instance.currentUser!.uid)
-                                          .collection(FirebaseAuth.instance.currentUser!.uid);
-                                      var querySnapshots = await collection.get();
-                                      for (var doc in querySnapshots.docs) {
-                                        await doc.reference.update({
-                                          'primary': 'false',
-                                        }).whenComplete(() =>
-                                            changeprimary(snapshot.data?.docs[index]["addressid"], context)
-                                        );
-                                      }
-                                    },
-                                    child:const Text("Set as primary address",
-                                      style: TextStyle(
-                                        fontSize: 18,
+                                    ElevatedButton(
+                                        onPressed: (){
+                                          Navigator.pushReplacement(
+                                              context, MaterialPageRoute(builder: (context) =>  AddressForm(addressid)));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            fixedSize: const Size(70, 40),
+                                            primary: Colors.amber
+
+                                        ),
+                                        child: const Text("Edit",
+                                          style: TextStyle(
+                                              fontSize:13 ,
+                                              color: Colors.black
+                                          ),
+                                        )
+
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(8)),
+
+                                    ElevatedButton(
+                                        onPressed: (){
+                                          var doc = FirebaseFirestore.instance.collection('Address')
+                                              .doc(FirebaseAuth.instance.currentUser!.uid).
+                                          collection(FirebaseAuth.instance.currentUser!.uid).doc(addressid);
+                                          doc.delete();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            fixedSize: const Size(85, 40),
+                                            primary: Colors.white70
+                                        ),
+                                        child: const Text("Remove ",
+                                          style: TextStyle(
+                                              fontSize:13 ,
+                                              color: Colors.black
+                                          ),
+                                        )
+
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(5)),
+
+                                    Visibility(
+                                      visible: primary==trues ?
+                                          false:true,
+                                      child:ElevatedButton(
+                                          onPressed:() async{
+                                            var collection = FirebaseFirestore.instance
+                                                .collection('Address').doc(FirebaseAuth.instance.currentUser!.uid)
+                                                .collection(FirebaseAuth.instance.currentUser!.uid);
+                                            var querySnapshots = await collection.get();
+                                            for (var doc in querySnapshots.docs) {
+                                              await doc.reference.update({
+                                                'primary': 'false',
+                                              }).whenComplete(() =>
+                                                  //changeprimary(snapshot.data?.docs[index]["addressid"], context)
+                                             // addressid=snapshot.data?.docs[index]["addressid"]
+                                                ApiService().address_as_default(snapshot.data?.docs[index]["addressid"].toString(), context)
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              fixedSize: const Size(119, 40),
+                                              primary: Colors.white70
+                                          ),
+                                          child: const Text("Set as Default",
+                                            style: TextStyle(
+                                                fontSize:13 ,
+                                                color: Colors.black
+                                            ),
+                                          )
                                       ),
-                                    )
-                                ),
+                                    ),
+
+                                  ],
+                                )
 
                               ],
                             ),
                           ),
-                          Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.grey
-                                  ),
-                                  borderRadius: BorderRadius
-                                      .circular(1)
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  TextButton(
-                                    child: const Text(
-                                      "Edit",
-                                      style: TextStyle(
-                                          fontSize: 20
-                                      ),
-                                    ),
-                                    onPressed:(){
-                                      Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) =>  AddressForm(addressid)));
-                                    },
-                                  ),
-                                  const VerticalDivider(width: 5,thickness: 3,),
-                                  TextButton(
-                                    child: const Text(
-                                      "Remove",
-                                      style: TextStyle(
-                                          fontSize: 20
-                                      ),
-                                    ),
-                                    onPressed:(){
-                                      var doc = FirebaseFirestore.instance.collection('Address')
-                                          .doc(FirebaseAuth.instance.currentUser!.uid).
-                                      collection(FirebaseAuth.instance.currentUser!.uid).doc(addressid);
-                                      doc.delete();
 
-                                    },
-
-                                  ),
-                                ],
-                              )
-                          ),
                         ],
                       ),
                     );
@@ -261,24 +316,7 @@ class MyAddressMobile extends StatelessWidget {
   }
 
 
-  changeprimary(addressid,context){
 
-
-    var change= FirebaseFirestore.instance.collection('Address').doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection(FirebaseAuth.instance.currentUser!.uid);
-
-    if (kDebugMode) {
-      print(addressid);
-    }
-    change.doc(addressid).update({
-      "primary":"true"
-    }).whenComplete((){
-
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) =>  const My_Address()));
-    });
-
-  }
 }
 
 

@@ -3,11 +3,13 @@
 
 
 import 'package:as_fashion/Screen/MainScreen/MainScreenPage.dart';
+import 'package:as_fashion/Screen/ProductDetail/product_details.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../BillingPage.dart';
+import '../BillingPage/BillingPage.dart';
+import 'MyShoppingCartDesktop.dart';
 
 
 
@@ -27,7 +29,7 @@ class MyCartPage extends StatelessWidget {
             } else if (constraints.maxWidth > 600 && constraints.maxWidth < 900) {
               return     const MyShoppingCartMobile();
             } else {
-              return    const MyShoppingCartMobile();
+              return    const MyShoppingCartDesktop();
             }
           },
         )
@@ -59,7 +61,7 @@ class _MyShoppingCartMobileState extends State<MyShoppingCartMobile> {
         backgroundColor:const Color.fromARGB(232,232,232,232),
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.white,
+          //backgroundColor: Colors.white,
           leading:IconButton(
             onPressed:(){
               Navigator.pushReplacement(
@@ -67,7 +69,7 @@ class _MyShoppingCartMobileState extends State<MyShoppingCartMobile> {
               ));},
             icon:const Icon(
               Icons.arrow_back_ios_rounded,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           title: const Text("My Shopping Cart",
@@ -96,11 +98,12 @@ class _MyShoppingCartMobileState extends State<MyShoppingCartMobile> {
                   total.clear();
                   return Column(
                     children: [
-                      Expanded(child:   ListView.builder(
+                      Expanded(
+                        child:ListView.builder(
                           itemCount: snapshot.data?.docs.length,
                           itemBuilder: (context,index){
                             var pid =snapshot.data?.docs[index]["pid"];
-                            var image =snapshot.data?.docs[index]["image"];
+                            List image =snapshot.data?.docs[index]["image"];
                             var pname =snapshot.data?.docs[index]["pname"];
                             var brand =snapshot.data?.docs[index]["brand"];
                             var price =snapshot.data?.docs[index]["price"];
@@ -111,83 +114,89 @@ class _MyShoppingCartMobileState extends State<MyShoppingCartMobile> {
                             if (kDebugMode) {
                               print(sum);
                             }
-                            return Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.grey
-                                  ),
-                                  borderRadius: BorderRadius
-                                      .circular(1)
-                              ),
-                              height: 170,
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.all(20),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children:  [
+                            return InkWell(
+                              onTap: (){
+                                Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (context) =>  ProductDetails(pid,"Product Detail")
+                                ));                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.grey
+                                    ),
+                                    borderRadius: BorderRadius
+                                        .circular(1)
+                                ),
+                                height: 170,
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:  [
 
-                                  Image.network(image,
-                                    height: 100,
-                                    width: 90,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  const Padding(padding: EdgeInsets.all(10)),
-                                  Column(
-                                    // mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children:  [
-                                      Text(pname,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                            fontSize: 15
+                                    Image.network(image[0],
+                                      height: 100,
+                                      width: 90,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(10)),
+                                    Column(
+                                      // mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children:  [
+                                        Text(pname,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                              fontSize: 15
+                                          ),
                                         ),
-                                      ),
-                                      const Padding(padding: EdgeInsets.only(top: 8)),
-                                      Text(brand,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey,
-                                            fontSize: 12
+                                        const Padding(padding: EdgeInsets.only(top: 8)),
+                                        Text(brand,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey,
+                                              fontSize: 12
+                                          ),
                                         ),
-                                      ),
-                                      const Padding(padding: EdgeInsets.all(10)),
-                                      Text("Size : $size",
-                                        style:const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey
+                                        const Padding(padding: EdgeInsets.all(10)),
+                                        Text("Size : $size",
+                                          style:const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
+                                          ),
                                         ),
-                                      ),
-                                      const Padding(padding: EdgeInsets.only(top: 8)),
-                                      Row(
-                                        //crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children:  [
-                                          Text("Price : $price",
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey
+                                        const Padding(padding: EdgeInsets.only(top: 8)),
+                                        Row(
+                                          //crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children:  [
+                                            Text("Price : $price",
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey
+                                              ),
                                             ),
-                                          ),
-                                          const Padding(padding: EdgeInsets.only(left: 25)),
-                                          const Text("Quan: ",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey
+                                            const Padding(padding: EdgeInsets.only(left: 25)),
+                                            const Text("Quan: ",
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey
+                                              ),
                                             ),
-                                          ),
-                                          _decrementButton(index,quan,pid),
-                                          Text(
-                                            '$quan',
-                                            style: const TextStyle(fontSize: 12.0),
-                                          ),
-                                          _incrementButton(index,quan,pid),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                            _decrementButton(index,quan,pid),
+                                            Text(
+                                              '$quan',
+                                              style: const TextStyle(fontSize: 12.0),
+                                            ),
+                                            _incrementButton(index,quan,pid),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           }

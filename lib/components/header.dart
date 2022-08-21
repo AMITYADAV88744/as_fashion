@@ -11,19 +11,21 @@ import '../Screen/LoginPage/Login_Screen.dart';
 import '../Screen/My_Account/My_Account_Desktop.dart';
 import '../Screen/My_Address/My_Address.dart';
 import '../constants.dart';
+import 'CustomSearch.dart';
 
 class Header extends StatelessWidget {
    Header({Key? key}) : super(key: key);
 
 
-  late List menuItems=[ "MY ACCOUNT","MY ORDER","MY ADDRESS"];
+  late List menuItems=[ "MY ACCOUNT","MY ORDER","MY ADDRESS","MY WISHLIST"];
  // CustomPopupMenuController _controller = CustomPopupMenuController();
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.amber,
           border: Border.all(
-              color: Colors.white70
+              color: Colors.amber
           ),
           borderRadius: BorderRadius
               .circular(1)
@@ -51,7 +53,7 @@ class Header extends StatelessWidget {
             child: const Text('MEN',
               style: TextStyle(
                   fontWeight: FontWeight.normal,
-                  color: Colors.black54,
+                  color: Colors.black,
                   fontSize: 20
               ),
             ),
@@ -62,7 +64,7 @@ class Header extends StatelessWidget {
             child: const Text('WOMEN',
               style: TextStyle(
                   fontWeight: FontWeight.normal,
-                  color: Colors.black54,
+                  color: Colors.black,
                   fontSize: 20
               ),
             ),
@@ -73,20 +75,29 @@ class Header extends StatelessWidget {
             width: MediaQuery.of(context).size.width/4,
             padding: const EdgeInsets.fromLTRB(20,5,10,5),
             decoration:BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.circular(10)
             ),
             child: Row(
-              children: const [
+              children:  [
                 Icon(Icons.search_sharp,size: 30,),
                // Padding(padding: EdgeInsets.only(left: 15)),
-                Text('Are you loking for?',
-                  style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey,
-                    fontSize: 20
+                InkWell(
+                  onTap: (){
+                    showSearch(
+                      context: context,
+                      delegate: CustomSearchDelegate(),
+                    );
+                  },
+                  child: Text('Are you loking for?',
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                        fontSize: 20
+                    ),
                   ),
-                ),
+                )
+
               ],
             ),
           ),
@@ -107,7 +118,7 @@ class Header extends StatelessWidget {
                     child: const Text('Login',
                       style: TextStyle(
                           fontWeight: FontWeight.normal,
-                          color: Colors.black54,
+                          color: Colors.black,
                           fontSize: 20
                       ),
                     ),
@@ -125,6 +136,8 @@ class Header extends StatelessWidget {
                           children:  [
                             GestureDetector(
                               onTap: (){
+                                Navigator.pop(context);
+
                                 Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyAccountDesktop()));
                               },
                               child: const Text("MY ACCOUNT ",
@@ -138,6 +151,8 @@ class Header extends StatelessWidget {
                             const Padding(padding: EdgeInsets.all(12)),
                             GestureDetector(
                               onTap: (){
+                                Navigator.pop(context);
+
                                 Navigator.push(
                                     context, MaterialPageRoute(
                                     builder: (context) => const My_Address()
@@ -155,7 +170,9 @@ class Header extends StatelessWidget {
                             const Padding(padding: EdgeInsets.all(12)),
                             GestureDetector(
                               onTap: (){
-                                 Navigator.push(
+                                Navigator.pop(context);
+
+                                Navigator.push(
                                      context, MaterialPageRoute
                                    (builder: (context) => const MyOrderPage()
                                  )
@@ -172,7 +189,8 @@ class Header extends StatelessWidget {
                             const Padding(padding: EdgeInsets.all(12)),
                             GestureDetector(
                               onTap: (){
-                                //  Navigator.push(context, MaterialPageRoute(builder: (context) => const My_Account_Desktop()));
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyWishListPage()));
                               },
                               child: const Text("MY WISHLIST ",
                                 style:TextStyle(
@@ -188,6 +206,8 @@ class Header extends StatelessWidget {
                     ),
                     verticalMargin: -10,
                     pressType:PressType.singleClick ,
+                    controller: CustomPopupMenuController(),
+                    //enablePassEvent: true,
                     child:   const Icon(
                         Icons.account_circle_rounded,
                         color: Colors.black

@@ -6,7 +6,7 @@ class Users{
   Users(this.id, this.name, this.dob, this.email, this.phone, this.gender);
 
   Users.fromData(Map<String, dynamic> data)
-      : id = data['id'],
+      :id = data['id'],
         name = data['name'],
         email = data['email'],
         phone = data['phone'],
@@ -22,6 +22,4 @@ class Users{
       'dob': dob,
     };
   }
-
-
 }

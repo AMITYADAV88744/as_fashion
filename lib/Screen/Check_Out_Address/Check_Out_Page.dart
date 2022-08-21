@@ -1,8 +1,7 @@
 
-import 'dart:math';
 
 import 'package:as_fashion/Screen/Check_Out_Address/Check_Out_Mobile.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'Check_Out_Desktop.dart';
@@ -16,13 +15,19 @@ class Check_Out_Page extends StatelessWidget {
         body: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < 600) {
-              print("----CheckoutMobile---");
+              if (kDebugMode) {
+                print("----CheckoutMobile---");
+              }
               return    CheckOutMobile(pid,size);
             } else if (constraints.maxWidth > 600 && constraints.maxWidth < 900) {
-              print("----CheckoutDesltop---");
-              return     CheckOutDesktop(pid,size);
+              if (kDebugMode) {
+                print("----CheckoutDesltop---");
+              }
+              return     CheckOutMobile(pid,size);
             } else {
-              print("----CheckoutDesltop---");
+              if (kDebugMode) {
+                print("----CheckoutDesltop---");
+              }
               return    CheckOutDesktop(pid,size);
             }
           },

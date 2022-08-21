@@ -1,8 +1,11 @@
 
+import 'package:as_fashion/components/Footer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 import '../../components/header.dart';
 
 class MyOrderDesktop extends StatefulWidget {
@@ -17,6 +20,8 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
 
 
   var orderRef=FirebaseFirestore.instance.collection("Orders").doc(FirebaseAuth.instance.currentUser?.uid);
+
+  double defaulttext=15;
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
@@ -25,7 +30,7 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
 
     return Scaffold(
         body:SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const ScrollPhysics(),
           child: ListView(
             shrinkWrap: true,
            physics: const BouncingScrollPhysics(),
@@ -35,7 +40,7 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
               Header(),
               const Padding(padding: EdgeInsets.zero),
                const Padding(
-                padding: EdgeInsets.fromLTRB(50,50,30,15),
+                padding: EdgeInsets.fromLTRB(50,50,30,0),
                 child:  Text("My Orders",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -46,8 +51,8 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(50,0,70,0),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width/5,
+                height: MediaQuery.of(context).size.height/1.4,
+                width: MediaQuery.of(context).size.width/3,
                 child:  StreamBuilder<QuerySnapshot>(
                   stream:orderRef.collection(FirebaseAuth.instance.currentUser!.uid).snapshots() ,
                   builder: (context,snapshot){
@@ -59,9 +64,17 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
                     if(snapshot.connectionState==ConnectionState.active){
 
                       if(snapshot.hasData){
-                        return ListView.builder(
-                            itemCount: snapshot.data?.docs.length,
-                            itemBuilder: (context,index){
+                        DateFormat format = DateFormat("hh:mm a").add_d().add_yMMM();
+
+                        return AlignedGridView.count(
+                            controller: ScrollController(),
+
+                            physics: const BouncingScrollPhysics(),
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 5,
+                            crossAxisSpacing: 5,
+                            itemCount:snapshot.data?.docs.length,
+                            itemBuilder: (context, index){
                               return GestureDetector(
                                 child: Padding(padding: const EdgeInsets.all(15),
                                   child: Container(
@@ -70,23 +83,23 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
                                             color: Colors.grey
                                         ),
                                         borderRadius: BorderRadius
-                                            .circular(1)
+                                            .circular(10)
                                     ),
-                                    height: 170,
-                                    width: MediaQuery.of(context).size.width,
+                                    height: 200,
+                                    width: 500,
                                     padding: const EdgeInsets.all(20),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children:  [
-                                        snapshot.data!.docs[index]["image"].toString().isNotEmpty==true?
-                                        Image.network(snapshot.data?.docs[index]["image"],
+                                        snapshot.data!.docs[index]["image"][0].toString().isNotEmpty==true?
+                                        Image.network(snapshot.data?.docs[index]["image"][0],
                                           height: 150,
-                                          width: 110,
+                                          width: 120,
                                           fit: BoxFit.fill,
                                         ):const SizedBox(
-                                          height: 150,
-                                          width: 110,
+                                          height: 300,
+                                          width: 250,
                                         ),
                                         const Padding(padding: EdgeInsets.all(20)),
                                         Column(
@@ -97,7 +110,7 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.black,
-                                                  fontSize: 15
+                                                  fontSize: 18
                                               ),
                                             ),
                                             const Padding(padding: EdgeInsets.only(top: 8)),
@@ -105,13 +118,15 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.grey,
-                                                  fontSize: 12
+                                                  fontSize: 15
                                               ),
                                             ),
                                             const Padding(padding: EdgeInsets.all(10)),
-                                            const Text("Delevered by 27 Aug 2022 ",
-                                              style:TextStyle(
-                                                  fontSize: 10,
+                                             Text("Delivered by ${DateFormat("dd MMM yyyy").format(
+                                                 DateTime.parse(format.parse(snapshot.data?.docs[index]["or_dtime"])
+                                                     .add(const Duration(days: 7)).toString()))}",
+                                              style:const TextStyle(
+                                                  fontSize:10,
                                                   fontWeight: FontWeight.normal,
                                                   color: Colors.black
                                               ),
@@ -132,7 +147,8 @@ class _MyOrderDesktopState extends State<MyOrderDesktop> {
                     );
                   },
                 ),
-              )
+              ),
+              const Footer(),
             ],
           ),
         )

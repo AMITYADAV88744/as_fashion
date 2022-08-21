@@ -1,8 +1,13 @@
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart%20';
 
+import '../ProductDetail/Pnicode.dart';
 import 'My_Address.dart';
 
 class AddressForm_D extends StatelessWidget {
@@ -179,6 +184,9 @@ class AddressForm_D extends StatelessWidget {
                           ),
                           labelText: "PINCODE",
                         ),
+                        onChanged: (text){
+                          _makeGetRequest(text);
+                        },
                       ),
                       const Padding(padding: EdgeInsets.all(15)),
 
@@ -233,7 +241,7 @@ class AddressForm_D extends StatelessWidget {
               pinController.text = snapshot.data?.get("pincode");
               return Center(
               child: Padding(
-                padding: EdgeInsets.all(50),
+                padding: const EdgeInsets.all(50),
                 child: Container(
                   padding: const EdgeInsets.only(top: 25),
                   color: Colors.white,
@@ -336,6 +344,9 @@ class AddressForm_D extends StatelessWidget {
                           ),
                           labelText: "PINCODE",
                         ),
+                        onChanged: (text){
+                          _makeGetRequest(text);
+                        },
                       ),
                       const Padding(padding: EdgeInsets.all(15)),
 
@@ -388,10 +399,42 @@ class AddressForm_D extends StatelessWidget {
       ),
     );
   }
+  _makeGetRequest(text) async {
+    var pincode;
+    pincode=text;
+    // make request
+    List postoffice=[];
+    // int pincode=229001;
+    var url = Uri.parse("https://api.postalpincode.in/pincode/${pincode}");
+    Response response = await http.get(url);
+
+    // sample info available in response
+    int statusCode = response.statusCode;
+    Map<String, String> headers = response.headers;
+    String json = response.body;
+    List<PostOffice> postofficess=[];
+    final parsed = jsonDecode(json);
+
+    postoffice=parsed[0]["PostOffice"] ;
+    //var welcom= Welcome.fromJson(parsed);
+    postoffice=parsed[0]["PostOffice"];
+    print(postoffice.length);
+
+    postoffice.forEach((element) {
+
+      postofficess.add(PostOffice.fromJson(element));
+    });
+    cityController.text=postofficess[0].block.toString();
+    stateController.text=postofficess[0].state.toString();
+
+    print(postofficess[0].state);
+    print(postofficess[0].country);
+    print(postofficess[0].block);
+  }
 
   void  add_update(context) {
     var dref= FirebaseFirestore.instance.collection("Address").doc(FirebaseAuth.instance.currentUser?.uid.toString());
-    dref..set(
+    dref.set(
         {
           "name":nameController.text.trim(),
           "flatno":flatnoController.text.trim(),

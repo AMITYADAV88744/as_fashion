@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../MainScreen/MainScreenPage.dart';
 import '../MyShoppingCart/MyCartPage.dart';
 import '../MyWishListPage.dart';
@@ -22,7 +23,6 @@ class MyOrderMobile extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           leading:  IconButton(
             onPressed:(){
               Navigator.pushReplacement(
@@ -31,7 +31,7 @@ class MyOrderMobile extends StatelessWidget {
             },
             icon:  const Icon(
               Icons.arrow_back_ios_rounded,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           title: const Text('My Orders',
@@ -49,7 +49,7 @@ class MyOrderMobile extends StatelessWidget {
                       ));
                     },
                     icon: const Icon(
-                      Icons.favorite_border_sharp,
+                      Icons.favorite_outlined,
                       color: Colors.black,
                     )
                 ),
@@ -92,6 +92,11 @@ class MyOrderMobile extends StatelessWidget {
                   return ListView.builder(
                       itemCount: snapshot.data?.docs.length,
                       itemBuilder: (context,index){
+                        var or_dtime=snapshot.data!.docs[index]["or_dtime"];
+                        DateFormat format = DateFormat("hh:mm a").add_d().add_yMMM();
+
+
+                        var or_status=snapshot.data!.docs[index]["or_status"];
                         var orderid=snapshot.data?.docs[index]["order_no"];
                         return GestureDetector(
                           onTap: (){
@@ -99,14 +104,14 @@ class MyOrderMobile extends StatelessWidget {
                             Navigator.pushReplacement(
                                 context, MaterialPageRoute(builder: (context) =>  MyOrderDetail(orderid)));
                           },
-                          child: Padding(padding: const EdgeInsets.all(15),
+                          child: Padding(padding: const EdgeInsets.all(10),
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Colors.grey
                                   ),
                                   borderRadius: BorderRadius
-                                      .circular(1)
+                                      .circular(10)
                               ),
                               height: 170,
                               width: MediaQuery.of(context).size.width,
@@ -116,7 +121,7 @@ class MyOrderMobile extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children:  [
                                   snapshot.data!.docs[index]["image"].toString().isNotEmpty==true?
-                                  Image.network(snapshot.data?.docs[index]["image"],
+                                  Image.network(snapshot.data?.docs[index]["image"][0],
                                     height: 150,
                                     width: 110,
                                     fit: BoxFit.fill,
@@ -145,8 +150,14 @@ class MyOrderMobile extends StatelessWidget {
                                         ),
                                       ),
                                       const Padding(padding: EdgeInsets.all(10)),
-                                      const Text("Delivered by 27 Aug 2022 ",
-                                        style:TextStyle(
+                                       Text(
+                                           or_status=="Delivered" ?
+                                           "Order has been Delivered " :
+                                           "Expected by ${DateFormat("dd MMM yyyy").
+                                           format(DateTime.parse(format.parse(or_dtime)
+                                               .add(const Duration(days: 7))
+                                               .toString()))}",
+                                         style:const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.normal,
                                             color: Colors.black

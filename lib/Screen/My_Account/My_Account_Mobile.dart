@@ -1,6 +1,7 @@
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -21,19 +22,25 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
   bool phoneexit = true;
   TextEditingController nameController = TextEditingController(); // initialize the controller
   TextEditingController phoneController =TextEditingController(); // initialize the controller
-  TextEditingController genderController=TextEditingController(); // initialize the controller
   TextEditingController emailController= TextEditingController();
+  TextEditingController genderController= TextEditingController();
 
   var images;
   var imageFile;
   bool onlytext=true;
+  late String genders='Select Gender';
+
+  late final List<String> genderList = [
+    'Male',
+    'Female',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+       // backgroundColor: Colors.white,
         leading:  IconButton(
           onPressed:(){
             Navigator.pushReplacement(
@@ -42,7 +49,7 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
           },
           icon:  const Icon(
             Icons.arrow_back_ios_rounded,
-            color: Colors.grey,
+            color: Colors.black,
           ),
         ),
         title: const Text('My Profile',
@@ -86,6 +93,7 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
             );
           }
           if(snapshot.connectionState==ConnectionState.active){
+            List sizes=['M','F'];
 
             /// Email is not exists in database
             if(snapshot.data!.exists ==true){
@@ -93,11 +101,20 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                 print("email  exit");
               }
 
-               images=snapshot.data?.get("image");
+              images=snapshot.data?.get("image");
               nameController.text = snapshot.data?.get("name");
               phoneController.text = snapshot.data?.get("phone");
-              emailController.text = snapshot.data?.get("email");
-              genderController.text = snapshot.data?.get("gender");
+              if(snapshot.data?.get("gender").toString().isEmpty==true){
+                genders="Male";
+              }else{
+                genders=snapshot.data?.get("gender");
+
+              }
+              if(snapshot.data?.get("email").toString().isEmpty==true){
+                emailController.text = "";
+              }else{
+                emailController.text = snapshot.data?.get("email");
+              }
 
               return Container(
                 padding: const EdgeInsets.only(top: 25),
@@ -124,43 +141,46 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                           child: CircleAvatar(
                             radius: 70,
                             child: ClipOval(
-                              child: images.isEmpty==true ?
-                             imageFile==null?
-                             Image.asset("assets/avtar_team.png",
-                               height: 150,
-                               width: 150,
-                               fit: BoxFit.cover,
-                             ): Image.file(
-                               imageFile,
-                               height: 150,
-                               width: 150,
-                               fit: BoxFit.cover,
-                             )
-                                  : Image.network(images,
+                              child: imageFile==null?
+                              images==null?
+                              Image.asset("assets/avtar_team.png",
+                                height: 150,
+                                width: 150,
+                                fit: BoxFit.cover,
+                              ):
+                              Image.network(
+                                images,
                                 width: 150,
                                 height: 150,
-                                fit: BoxFit.cover,
-                              ),
+                                fit: BoxFit.fill,
+                              ): Image.file(
+                                imageFile,
+                                height: 150,
+                                width: 150,
+                                fit: BoxFit.fill,
+                              )
                             ),
                           ),
                         ),
                       );
                     }
                     ),
+                    const Padding(padding: EdgeInsets.all(5)),
                     TextField(
                       controller: nameController,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         labelText: "NAME",
+                          labelStyle: const TextStyle(
+                              color: Colors.black54
+                          )
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
@@ -172,14 +192,15 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         labelText: "CONTACT NO",
+                          labelStyle: TextStyle(
+                              color: Colors.black54
+                          )
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
@@ -190,33 +211,68 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         labelText: "EMAIL",
+                        labelStyle: TextStyle(
+                            color: Colors.black54
+                        ),
+
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
-                    TextField(
-                      controller: genderController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+
+                    DropdownButtonFormField2(
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        labelText: "GENDER",
                       ),
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 30,
+                      buttonHeight: 60,
+                      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                      dropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      items: genderList
+                          .map((item) =>
+                          DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ))
+                          .toList(),
+
+                      hint: Text(genders,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onChanged: (text) {
+                        genders = text.toString();
+
+                      },
+                      onSaved: (text) {
+                      },
                     ),
+
+                    const Padding(padding: EdgeInsets.all(15)),
                   ],
                 ),
               );
@@ -226,11 +282,7 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
               if (kDebugMode) {
                 print("email  not exit");
               }
-              // nameController.text = snapshot.data?.get("name");
               phoneController.text = FirebaseAuth.instance.currentUser!.phoneNumber.toString();
-              //  emailController.text = snapshot.data?.get("email");
-              // genderController.text = snapshot.data?.get("gender");
-
               return Container(
                 padding: const EdgeInsets.only(top: 25),
                 color: Colors.white,
@@ -279,14 +331,15 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
+                      decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
                         labelText: "NAME",
+                          labelStyle: TextStyle(
+                          color: Colors.black54
+                      )
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
@@ -298,14 +351,15 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
+                      decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
                         labelText: "CONTACT NO",
+                          labelStyle: const TextStyle(
+                          color: Colors.black54
+                      )
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
@@ -316,33 +370,62 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
+                      decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
                         labelText: "EMAIL",
+                          labelStyle: TextStyle(
+                              color: Colors.black54
+                          )
                       ),
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
-                    TextField(
-                      controller: genderController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                    DropdownButtonFormField2(
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        labelText: "GENDER",
                       ),
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 30,
+                      buttonHeight: 60,
+                      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                      dropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      items: genderList
+                          .map((item) =>
+                          DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ))
+                          .toList(),
+                      hint: Text(genders,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                      onChanged: (text) {
+                        genders = text.toString();
+
+                      },
+                      onSaved: (text) {
+                      },
                     ),
+
                   ],
                 ),
               );
@@ -379,16 +462,16 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
 
 
   updateprofile(context) async{
-
    if(onlytext==true){
+     //print(gender);
      FirebaseFirestore.instance.collection("Users")
          .doc(FirebaseAuth.instance.currentUser?.uid.toString()).set(
          {
            "phone":phoneController.text.trim(),
            "email": emailController.text.trim(),
            "name":nameController.text.trim(),
-           "gender":genderController.text.trim(),
            "image": images,
+           "gender":genders,
          }
      ).whenComplete(() =>{
        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage())),
@@ -404,7 +487,7 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
 // to get the url of the image from firebase storage
      url = await (await task1).ref.getDownloadURL();
      if (kDebugMode) {
-       print("URRRRRRRRRRLLLLLLLLLLL ::\n::\n::\n:: $url");
+       print("URL ::\n::\n::\n:: $url");
      }
      FirebaseFirestore.instance.collection("Users")
          .doc(FirebaseAuth.instance.currentUser?.uid.toString()).set(
@@ -412,8 +495,9 @@ class _MyAccountMobileState extends State<MyAccountMobile> {
            "phone":phoneController.text.trim(),
            "email": emailController.text.trim(),
            "name":nameController.text.trim(),
-           "gender":genderController.text.trim(),
+          "gender":genders.toString(),
            "image":url,
+
          }
      ).whenComplete(() =>{
        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage())),

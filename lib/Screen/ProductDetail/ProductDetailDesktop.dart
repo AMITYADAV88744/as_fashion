@@ -1,11 +1,16 @@
 
 import 'package:as_fashion/Screen/LoginPage/Login_Screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:color_parser/color_parser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../../components/Footer.dart';
+import '../../components/extenstion.dart';
 import '../../components/header.dart';
+import '../../model/product_model.dart';
 import '../Check_Out_Address/Check_Out_Page.dart';
+import 'ProductAddtionalDetail.dart';
 
 class ProductDetailsDesktop extends StatefulWidget {
   String pid;
@@ -21,19 +26,16 @@ class ProductDetailsDesktop extends StatefulWidget {
 class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
   String pid;
 
-  var image,brand,pname,color;
-  late int price;
+  double defaulttext=12;
 
   _ProductDetailsDesktopState(this.pid);
 
   final DatabaseReference dbRef =
-  FirebaseDatabase.instance.reference().child('Products').child("Male");
+  FirebaseDatabase.instance.reference().child('Products');
   late List<String> sizes = ["S", "M", "L", "XL"];
   late String selectedSize="M";
   late  bool isSelected=false;
-
-
-
+  late ProductModel _productModel;
 
   @override
   Widget build(BuildContext context) {
@@ -49,17 +51,20 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
 
                   if (snapshot.hasData) {
                     //retrieve data
-                     image = snapshot.data?.value['image'];
-                     brand = snapshot.data?.value['brand'];
-                     pname = snapshot.data?.value['pname'];
-                     price = snapshot.data?.value['price'];
-                     color = snapshot.data?.value['color'];
-                    //var size = snapshot.data?.value['size'];
-
-
-
+                    _productModel=ProductModel.fromJson(snapshot.data!.value);
+                    List sizes=_productModel.size;
+                    List<Color> col=[];
+                    ColorParser parser;
+                    List<String> colname=[];
+                    for(int i=0;i<_productModel.color.length;i++){
+                      col.add(HexColor.fromHex(_productModel.color[i]));
+                      colname.add(ColorParser.hex(_productModel.color[i]).toName().toString());
+                    }
+                    int ima=_productModel.image.length;
+                    print(ima);
+                    parser = ColorParser.hex(_productModel.color[0]);
                     return Container(
-                      padding: const EdgeInsets.fromLTRB(50, 10, 10, 0),
+                      padding: const EdgeInsets.fromLTRB(80, 70, 50, 0),
                       width: MediaQuery
                           .of(context)
                           .size
@@ -68,43 +73,74 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                           .of(context)
                           .size
                           .height,
-                      child:
-                      Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded( //<-- Expanded widget
+                          Expanded(
+                            flex:6,//<-- Expanded widget
                             child: Container(
                               height: 550,
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width,
+                              width: 200,
+                             padding:const EdgeInsets.fromLTRB(30, 30, 10, 30),
                               decoration: BoxDecoration(
+                                border: Border.all(color: Colors.amber),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Image.network(image,
-                                fit: BoxFit.fill,
-                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex:3,
+                                    child: SizedBox(
+                                      width: 70,
+                                      child: ListView(
+                                        children: [
+                                          Image.network(
+                                            _productModel.image[0],
+                                            height: 100,
+                                            width: 100,
+                                          ),
+                                          const Padding(padding: EdgeInsets.all(2)),
+                                          ima>=2?
+                                         Image.network(
+                                           _productModel.image[1],
+                                           height: 100,
+                                           width: 100,
+                                         ):SizedBox(width: 10,)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 7,
+                                    child: Image.network(
+                                      _productModel.image[0],
+                                    // fit: BoxFit.fill,
+                                    ),
+                                  )
+                                ],
+                              )
                             ),
                           ),
-                          Expanded( //<-- Expanded widget
+                          const Padding(padding: EdgeInsets.all(3)),
+                          Expanded( //
+                              flex:6,//<-- Expanded widget
                               child: SizedBox(
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width / 2,
+                                width:MediaQuery.of(context).size.width,
                                 child: ListView(
+                                //  padding:const EdgeInsets.fromLTRB(0, 50, 118, 0),
                                   //mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.all(25),
-
+                                        width: 260,
                                         color: Colors.white,
                                         child: ListView(
                                           shrinkWrap: true,
                                           children: [
-                                            Text(brand,
+                                            Text(_productModel.brand,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
@@ -113,7 +149,7 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                             ),
                                             const Padding(
                                               padding: EdgeInsets.all(5),),
-                                            Text(pname,
+                                            Text(_productModel.pname,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.normal,
                                                 color: Colors.black54,
@@ -124,20 +160,28 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                               padding: EdgeInsets.all(5),),
                                             Row(
                                               children: [
-                                                Text(price.toString(),
+                                                Text(_productModel.price.toString(),
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.black,
                                                     fontSize: 20,
                                                   ),
                                                 ),
-                                                const Padding(
-                                                  padding: EdgeInsets.all(4),),
-                                                const Text('70% OFF',
-                                                  style: TextStyle(
+                                                const Padding(padding: EdgeInsets.all(4),),
+                                                Text(_productModel.l_price.toString(),
+                                                  style: const TextStyle(
+                                                    decoration: TextDecoration.lineThrough,
+                                                    fontWeight: FontWeight.normal,
+                                                    color: Colors.grey,
+                                                    fontSize: 17,
+                                                  ),
+                                                ),
+                                                const Padding(padding: EdgeInsets.all(4),),
+                                                Text('${_productModel.discount}% OFF',
+                                                  style: const TextStyle(
                                                     fontWeight: FontWeight
                                                         .normal,
-                                                    color: Colors.green,
+                                                    color: Colors.amber,
                                                     fontSize: 17,
                                                   ),
                                                 ),
@@ -170,44 +214,37 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                             ),
                                             StatefulBuilder(builder: (context, StateSetter setstate){
                                               return Row(
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(5.0),
-                                                    child: Material(
-                                                      child: InkWell(
-                                                        borderRadius: BorderRadius.circular(3),
-                                                        onTap: (){
-                                                          setState(() {
-                                                          });
 
-                                                        },
-                                                        child: Container(
-                                                          margin: const EdgeInsets.only(
-                                                            top: 20 / 4,
-                                                            right: 20 / 2,
-                                                          ),
-                                                          padding: const EdgeInsets.all(2.5),
-                                                          height: 30,
-                                                          width: 30,
-                                                          decoration: BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            border: Border.all(
-                                                              color: isSelected ? Color(0xFF356C95) : Colors.transparent,
+                                                children: List.generate(
+                                                    col.length,
+                                                        (index) =>
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(5.0),
+                                                          child: Material(
+                                                            child: InkWell(
+                                                                borderRadius: BorderRadius.circular(3),
+                                                                onTap: (){
+                                                                  setState(() {
+                                                                    // selectedSize=sizes[index];
+                                                                    //print(selectedSize);
+                                                                  });
+
+                                                                },
+                                                                child:Container(
+                                                                  width: 35,
+                                                                  height: 35,
+                                                                  padding: const EdgeInsets.all(12),
+                                                                  decoration: BoxDecoration(
+                                                                    border: Border.all(color: col[index]),
+                                                                    shape: BoxShape.circle,
+                                                                    color: col[index],
+                                                                  ),
+                                                                )
                                                             ),
                                                           ),
-                                                          child: const DecoratedBox(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.redAccent,
-                                                              shape: BoxShape.circle,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  )
-                                                ]
+                                                        )
+                                                ),
                                               );
-
                                             }
                                             ),
                                             const Padding( padding: EdgeInsets.all(5)),
@@ -244,8 +281,8 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                                               width: 50,
                                                               decoration: BoxDecoration(
                                                                   color: selectedSize == sizes[index]
-                                                                      ? Color(0xFF667EEA)
-                                                                      : Color(0xFFF3F3F3),
+                                                                      ? Colors.amber
+                                                                      : const Color(0xFFF3F3F3),
                                                                   borderRadius: BorderRadius.circular(3)),
                                                               child: Align(
                                                                 alignment: Alignment.center,
@@ -280,7 +317,7 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                                     decoration: BoxDecoration(
                                                         border: Border.all(
                                                             color: Colors
-                                                                .blueAccent),
+                                                                .amber),
                                                         borderRadius: BorderRadius
                                                             .circular(5)
                                                     ),
@@ -288,7 +325,7 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                                         style: TextButton
                                                             .styleFrom(
                                                           backgroundColor: Colors
-                                                              .blueAccent,
+                                                              .amber,
                                                           textStyle: const TextStyle(
                                                               color: Colors
                                                                   .white),
@@ -352,6 +389,9 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                                           ],
                                         ),
                                       ),
+                                      const Padding(padding: EdgeInsets.all(2)),
+                                      ///   Product detail   ////////////////////////////////////////////////////////////////
+                                      ProductAddtionalDetail(pid),
                                     ]
                                 ),
                               )
@@ -365,7 +405,8 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
                     child: CircularProgressIndicator(),
                   );
                 },
-              )
+              ),
+              Footer()
 
             ],
           ),
@@ -374,12 +415,11 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
   }
 
 
-  void addtocart(context,_pid,selectedSize) {
+  void addtocart(context,pid,selectedSize) {
     var size =selectedSize;
-    var pid=_pid;
     var cartRef= FirebaseFirestore.instance.collection("ShoppingCart")
         .doc(FirebaseAuth.instance.currentUser?.uid.toString()).collection(FirebaseAuth.instance.currentUser!.uid);
-    var quan;
+    var quan=0;
 
 
     cartRef.doc(pid).get().then((docData) => {
@@ -388,19 +428,16 @@ class _ProductDetailsDesktopState extends State<ProductDetailsDesktop> {
         quan=quan+1,
         cartRef.doc(pid).update({"quantity":quan
         }),
-        print("quantity update")
-
       } else {
-        // document does not exist (only on online)
         cartRef.doc(pid).set(
             {
               "pid":pid,
               "size":size,
               "quantity":1,
-              "image":image,
-              "brand":brand,
-              "pname":pname,
-              "price":price
+              "image":_productModel.image,
+              "brand":_productModel.brand,
+              "pname":_productModel.pname,
+              "price":_productModel.price
               //"product_state":
             }).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(

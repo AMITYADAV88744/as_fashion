@@ -75,7 +75,7 @@ class BillingMobile extends StatelessWidget{
         leading:IconButton(
           onPressed:(){
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const LandingPage())
+                context, MaterialPageRoute(builder: (context) =>  LandingPage(""))
             );
           },
           icon:const Icon(

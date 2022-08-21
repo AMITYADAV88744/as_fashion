@@ -1,11 +1,17 @@
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart%20';
+import '../ProductDetail/Pnicode.dart';
 import 'My_Address.dart';
+
+
 
 class AddressForm extends StatelessWidget {
 
@@ -28,7 +34,6 @@ class AddressForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         leading:  IconButton(
           onPressed:(){
             Navigator.pushReplacement(
@@ -37,7 +42,7 @@ class AddressForm extends StatelessWidget {
           },
           icon:  const Icon(
             Icons.arrow_back_ios_rounded,
-            color: Colors.grey,
+            color: Colors.black,
           ),
         ),
         title: const Text('My Address',
@@ -343,9 +348,11 @@ class AddressForm extends StatelessWidget {
                         ),
                         labelText: "PINCODE",
                       ),
+                      onChanged: (text){
+                        _makeGetRequest(text);
+                      },
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
-
                     TextField(
                       controller: cityController,
                       style: const TextStyle(
@@ -394,6 +401,46 @@ class AddressForm extends StatelessWidget {
     );
   }
 
+    _makeGetRequest(text) async {
+      var pincode='';
+      pincode=text;
+      // make request
+      List postoffice=[];
+      // int pincode=229001;
+      var url = Uri.parse("https://api.postalpincode.in/pincode/$pincode");
+      Response response = await http.get(url);
+
+      // sample info available in response
+      int statusCode = response.statusCode;
+      Map<String, String> headers = response.headers;
+      String json = response.body;
+      List<PostOffice> postofficess=[];
+      final parsed = jsonDecode(json);
+
+      postoffice=parsed[0]["PostOffice"] ;
+      //var welcom= Welcome.fromJson(parsed);
+      postoffice=parsed[0]["PostOffice"];
+      if (kDebugMode) {
+        print(postoffice.length);
+      }
+
+      postoffice.forEach((element) {
+
+        postofficess.add(PostOffice.fromJson(element));
+      });
+      cityController.text=postofficess[0].block.toString();
+      stateController.text=postofficess[0].state.toString();
+
+      if (kDebugMode) {
+        print(postofficess[0].state);
+      }
+      if (kDebugMode) {
+        print(postofficess[0].country);
+      }
+      if (kDebugMode) {
+        print(postofficess[0].block);
+      }
+    }
  void  addupdate(context) {
 
    var dref= FirebaseFirestore.instance.collection("Address")
@@ -418,19 +465,20 @@ class AddressForm extends StatelessWidget {
   }
 }
 
+class AddressFormAdd extends StatefulWidget {
+  const AddressFormAdd({Key? key}) : super(key: key);
 
-class AddressFormAdd extends StatelessWidget {
+  @override
+  State<AddressFormAdd> createState() => _AddressFormAddState();
+}
 
-
-
-  AddressFormAdd({Key? key}) : super(key: key);
-
-   final TextEditingController nameController=TextEditingController();
+class _AddressFormAddState extends State<AddressFormAdd> {
+  final TextEditingController nameController=TextEditingController();
   final TextEditingController flatnoController = TextEditingController(); // initialize the controller
   final TextEditingController addressController=TextEditingController(); // initialize the controller
   final TextEditingController localityController=TextEditingController(); // initialize the controller
   final TextEditingController cityController = TextEditingController(); // initialize the controller
-  final TextEditingController stateController =TextEditingController();// initialize the controller
+  late  TextEditingController stateController =TextEditingController();// initialize the controller
   final TextEditingController pinController =TextEditingController();
 
 
@@ -441,7 +489,6 @@ class AddressFormAdd extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         leading:  IconButton(
           onPressed:(){
             Navigator.pushReplacement(
@@ -581,11 +628,11 @@ class AddressFormAdd extends StatelessWidget {
                     TextField(
 
                       controller: pinController,
-                      style: const TextStyle(
+                      style:  const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
+                      decoration:  const InputDecoration(
                         contentPadding: EdgeInsets.all(15),
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -594,6 +641,9 @@ class AddressFormAdd extends StatelessWidget {
                         ),
                         labelText: "PINCODE",
                       ),
+                      onChanged: (text){
+                        _makeGetRequest(text);
+                      },
                     ),
                     const Padding(padding: EdgeInsets.all(15)),
 
@@ -635,150 +685,151 @@ class AddressFormAdd extends StatelessWidget {
                   ],
                 ),
               );
-          }
+            }
             return Container(
-                padding: const EdgeInsets.only(top: 25),
-                color: Colors.white,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height / 1,
-                child: ListView(
-                  padding: const EdgeInsets.all(25),
-                  shrinkWrap: true,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
-                        ),
-                        labelText: "Name",
-                      ),
+              padding: const EdgeInsets.only(top: 25),
+              color: Colors.white,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height / 1,
+              child: ListView(
+                padding: const EdgeInsets.all(25),
+                shrinkWrap: true,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const Padding(padding: EdgeInsets.all(15)),
-
-                    TextField(
-                      controller: flatnoController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "HOUSE No. / FLAT No",
                       ),
+                      labelText: "Name",
                     ),
-                    const Padding(padding: EdgeInsets.all(15)),
-                    TextField(
-                      controller: addressController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                  ),
+                  const Padding(padding: EdgeInsets.all(15)),
+
+                  TextField(
+                    controller: flatnoController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "ADDRESS",
                       ),
+                      labelText: "HOUSE No. / FLAT No",
                     ),
-                    const Padding(padding: EdgeInsets.all(15)),
-
-                    TextField(
-                      controller: localityController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                  ),
+                  const Padding(padding: EdgeInsets.all(15)),
+                  TextField(
+                    controller: addressController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "LANDMARK",
                       ),
+                      labelText: "ADDRESS",
                     ),
-                    const Padding(padding: EdgeInsets.all(10)),
+                  ),
+                  const Padding(padding: EdgeInsets.all(15)),
 
-                    TextField(
-
-                      controller: pinController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                  TextField(
+                    controller: localityController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "PINCODE",
                       ),
+                      labelText: "LANDMARK",
                     ),
-                    const Padding(padding: EdgeInsets.all(15)),
+                  ),
+                  const Padding(padding: EdgeInsets.all(10)),
 
-                    TextField(
-                      controller: cityController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                  TextField(
+
+                    controller: pinController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "CITY",
                       ),
+                      labelText: "PINCODE",
                     ),
-                    const Padding(padding: EdgeInsets.all(10)),
-                    TextField(
+                  ),
+                  const Padding(padding: EdgeInsets.all(15)),
 
-                      controller: stateController,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(15),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.cyan
-                          ),
+                  TextField(
+                    controller: cityController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(15),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
                         ),
-                        labelText: "STATE",
                       ),
+                      labelText: "CITY",
                     ),
+                  ),
+                  const Padding(padding: EdgeInsets.all(10)),
+                  TextField(
 
-                  ],
-                ),
-              );
+                    controller: stateController,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration:  InputDecoration(
+                      contentPadding: const EdgeInsets.all(15),
+                      border: const UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.cyan
+                        ),
+                      ),
+                      labelText: "STATE",
+                      errorText: _makeGetRequest(stateController.text.trim()),
+                    ),
+                  ),
+
+                ],
+              ),
+            );
           }
           return const Center(
             child: CircularProgressIndicator(),
@@ -787,6 +838,42 @@ class AddressFormAdd extends StatelessWidget {
       ),
     );
   }
+
+
+  _makeGetRequest(text) async {
+    var pincode='';
+    pincode=text;
+    // make request
+    List postoffice=[];
+    // int pincode=229001;
+    var url = Uri.parse("https://api.postalpincode.in/pincode/$pincode");
+    Response response = await http.get(url);
+
+    // sample info available in response
+    int statusCode = response.statusCode;
+    Map<String, String> headers = response.headers;
+    String json = response.body;
+    List<PostOffice> postofficess=[];
+    final parsed = jsonDecode(json);
+
+    postoffice=parsed[0]["PostOffice"] ;
+    //var welcom= Welcome.fromJson(parsed);
+    postoffice=parsed[0]["PostOffice"];
+    if (kDebugMode) {
+      print(postoffice.length);
+    }
+
+    postoffice.forEach((element) {
+      postofficess.add(PostOffice.fromJson(element));
+    });
+    cityController.text=postofficess[0].block.toString();
+    stateController.text=postofficess[0].state.toString();
+
+    print(postofficess[0].state);
+    print(postofficess[0].country);
+    print(postofficess[0].block);
+  }
+
   void  addupdate(context) {
     String  addressid='';
     final random = Random();
@@ -814,3 +901,4 @@ class AddressFormAdd extends StatelessWidget {
 
   }
 }
+

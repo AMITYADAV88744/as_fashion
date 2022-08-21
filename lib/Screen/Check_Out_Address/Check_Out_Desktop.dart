@@ -1,22 +1,42 @@
 
 import 'dart:math';
+import 'package:checkbox_grouped/checkbox_grouped.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../../payments.dart';
+import '../BillingPage/ThankyouPage.dart';
 import '../LandingPage/LandingPage.dart';
 
-class CheckOutDesktop extends StatelessWidget {
+class CheckOutDesktop extends StatefulWidget {
+  final String pid,size; ///intent value
+
+  CheckOutDesktop(this.pid,this.size,{Key? key}) : super(key: key);
+
+  @override
+  State<CheckOutDesktop> createState(){
+
+    return _CheckOutDesktopState(this.pid,this.size);
+  }
+
+}
+
+class _CheckOutDesktopState extends State<CheckOutDesktop> {
   var image;
 
 
-  CheckOutDesktop(this.pid,this.size,{Key? key}) : super(key: key);
+  _CheckOutDesktopState(this.pid,this.size); ///intent value
+
   final String pid,size; ///intent value
 
   var quan=1,discount=50, total=0;
   String? phone = FirebaseAuth.instance.currentUser?.phoneNumber;
   bool phoneexit = true;
+  var flag=0;
+
 
   TextEditingController nameController = TextEditingController(); // initialize the controller
   TextEditingController phoneController =TextEditingController(); // initialize the controller
@@ -28,9 +48,7 @@ class CheckOutDesktop extends StatelessWidget {
   TextEditingController pinController =TextEditingController();// initialize the controller
 
   /// Product Database
-  final DatabaseReference productRef = FirebaseDatabase.instance.reference().child('Products').child("Male");
-
-
+  final DatabaseReference productRef = FirebaseDatabase.instance.reference().child('Products');
 
   /// Order Database
   var order_ref= FirebaseFirestore.instance.collection("Orders").doc(FirebaseAuth.instance.currentUser?.uid.toString());
@@ -44,6 +62,8 @@ class CheckOutDesktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GroupController controller = GroupController(initSelectedItem: [2]);
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -51,8 +71,7 @@ class CheckOutDesktop extends StatelessWidget {
             onPressed: () {
               Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const LandingPage()
-                  ));
+                  MaterialPageRoute(builder: (context) =>  LandingPage("Title")));
             },
             icon: const Icon(
               Icons.arrow_back_ios_rounded,
@@ -97,309 +116,309 @@ class CheckOutDesktop extends StatelessWidget {
                           landmarkController.text=snapshot.data?.get("landmark");
                           pinController.text=snapshot.data?.get("pincode");
 
-                            return Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: Center(
-                                child: Container(
-                                  padding: const EdgeInsets.only(top: 25),
-                                  color: Colors.white,
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height / 1,
-                                  child: ListView(
-                                    padding: const EdgeInsets.all(25),
-                                    shrinkWrap: true,
-                                    children: [
+                          return Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 25),
+                                color: Colors.white,
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 2,
+                                height: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .height / 1,
+                                child: ListView(
+                                  padding: const EdgeInsets.all(25),
+                                  shrinkWrap: true,
+                                  children: [
 
-                                      TextField(
-                                        controller: nameController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
-                                          ),
-                                          labelText: "NAME",
-                                        ),
+                                    TextField(
+                                      controller: nameController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        enabled: phone == null ?
-                                        phoneexit : false,
-                                        controller: phoneController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "CONTACT NO",
                                         ),
+                                        labelText: "NAME",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: flatnoController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      enabled: phone == null ?
+                                      phoneexit : false,
+                                      controller: phoneController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "HOUSE No. / FLAT No",
                                         ),
+                                        labelText: "CONTACT NO",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: addressController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: flatnoController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "ADDRESS",
                                         ),
+                                        labelText: "HOUSE No. / FLAT No",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: pinController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: addressController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "PIN-CODE",
                                         ),
+                                        labelText: "ADDRESS",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(10)),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: pinController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
+                                          ),
+                                        ),
+                                        labelText: "PIN-CODE",
+                                      ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(10)),
 
-                                      TextField(
+                                    TextField(
 
-                                        controller: cityController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
-                                          ),
-                                          labelText: "CITY",
-                                        ),
+                                      controller: cityController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      const Padding(padding: EdgeInsets.all(10)),
-                                      TextField(
-
-                                        controller: stateController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "STATE",
                                         ),
+                                        labelText: "CITY",
                                       ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(10)),
+                                    TextField(
 
-                                    ],
-                                  ),
+                                      controller: stateController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
+                                          ),
+                                        ),
+                                        labelText: "STATE",
+                                      ),
+                                    ),
+
+                                  ],
                                 ),
                               ),
-                            );
-                          }
+                            ),
+                          );
+                        }
                         if (snapshot.data!.data().toString().contains("address") !=true) {
-                            user.forEach((element) {
-                              nameController.text=element.get("name");
-                              phoneController.text=element.get("phone");
-                            });
-                            return Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: Center(
-                                child: Container(
-                                  padding: const EdgeInsets.only(top: 25),
-                                  color: Colors.white,
-                                  width: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .width / 2,
-                                  height: MediaQuery
-                                      .of(context)
-                                      .size
-                                      .height / 1,
-                                  child: ListView(
-                                    padding: const EdgeInsets.all(25),
-                                    shrinkWrap: true,
-                                    children: [
+                          user.forEach((element) {
+                            nameController.text=element.get("name");
+                            phoneController.text=element.get("phone");
+                          });
+                          return Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 25),
+                                color: Colors.white,
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 2,
+                                height: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .height / 1,
+                                child: ListView(
+                                  padding: const EdgeInsets.all(25),
+                                  shrinkWrap: true,
+                                  children: [
 
-                                      TextField(
-                                        controller: nameController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
-                                          ),
-                                          labelText: "NAME",
-                                        ),
+                                    TextField(
+                                      controller: nameController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        enabled: phone == null ?
-                                        phoneexit : false,
-                                        controller: phoneController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "CONTACT NO",
                                         ),
+                                        labelText: "NAME",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: flatnoController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      enabled: phone == null ?
+                                      phoneexit : false,
+                                      controller: phoneController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "HOUSE No. / FLAT No",
                                         ),
+                                        labelText: "CONTACT NO",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: addressController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: flatnoController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "ADDRESS",
                                         ),
+                                        labelText: "HOUSE No. / FLAT No",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(15)),
-                                      TextField(
-                                        controller: pinController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: addressController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "PIN-CODE",
                                         ),
+                                        labelText: "ADDRESS",
                                       ),
-                                      const Padding(padding: EdgeInsets.all(10)),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(15)),
+                                    TextField(
+                                      controller: pinController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
+                                          ),
+                                        ),
+                                        labelText: "PIN-CODE",
+                                      ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(10)),
 
-                                      TextField(
+                                    TextField(
 
-                                        controller: cityController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
-                                          ),
-                                          labelText: "CITY",
-                                        ),
+                                      controller: cityController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      const Padding(padding: EdgeInsets.all(10)),
-                                      TextField(
-
-                                        controller: stateController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.cyan
-                                            ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
                                           ),
-                                          labelText: "STATE",
                                         ),
+                                        labelText: "CITY",
                                       ),
+                                    ),
+                                    const Padding(padding: EdgeInsets.all(10)),
+                                    TextField(
 
-                                    ],
-                                  ),
+                                      controller: stateController,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.cyan
+                                          ),
+                                        ),
+                                        labelText: "STATE",
+                                      ),
+                                    ),
+
+                                  ],
                                 ),
                               ),
-                            );
-                          }
+                            ),
+                          );
+                        }
                         return const Center(
                           child: CircularProgressIndicator(),
                         );
@@ -419,7 +438,7 @@ class CheckOutDesktop extends StatelessWidget {
                         );
                       }if(snapshot.hasData){
 
-                         image = snapshot.data?.value['image'];
+                        image = snapshot.data?.value['image'][0];
                         var brand = snapshot.data?.value['brand'];
                         var pname = snapshot.data?.value['pname'];
                         var price = snapshot.data?.value['price'];
@@ -469,7 +488,7 @@ class CheckOutDesktop extends StatelessWidget {
                                         ),
                                       ),
                                       const Padding(padding: EdgeInsets.all(15)),
-                                       Text("Size : $size",
+                                      Text("Size : $size",
                                         style:const TextStyle(
                                             fontSize: 18,
                                             color: Colors.grey
@@ -618,6 +637,62 @@ class CheckOutDesktop extends StatelessWidget {
                               ),
                             ),
                             Container(
+                              padding: const EdgeInsets.fromLTRB(25,5,0,5),
+                              color: Colors.grey,
+                              height: 35,
+                              width: MediaQuery.of(context).size.width,
+                              child: const Text("Select Payment Mode",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 15
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(25,5,10,5),
+                              height: 100,
+                              width: MediaQuery.of(context).size.width/2,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey
+                                  ),
+                                  borderRadius: BorderRadius
+                                      .circular(1)
+                              ),
+                              child:StatefulBuilder(
+                                builder: (context, setState) {
+                                 return SimpleGroupedCheckbox<int>(
+                                   controller: controller,
+                                   //groupTitle:"Basic",
+                                   onItemSelected: (data) {
+                                     print(data);
+                                     if (data == 1) {
+                                       setState(() {
+                                         flag=0;
+                                       });
+                                       //controller.disabledItemsByTitles(["Cash on Delivery"]);
+                                       controller.enabledItemsByTitles(["Online Payment Method"]);
+
+                                     } else if (data == 2) {
+                                       setState(() {
+                                         flag=1;
+                                       });
+                                       controller.enabledItemsByTitles([ "Cash on Delivery"]);
+                                       //controller.disabledItemsByTitles(["Online Payment Method"]);
+                                     }
+                                   },
+                                   itemsTitle: const ["Online Payment Method", "Cash on Delivery",],
+                                   values: const [1, 2,],
+                                   groupStyle: GroupStyle(
+                                       activeColor: Colors.amber,
+                                       itemTitleStyle: const TextStyle(fontSize: 13)),
+                                   checkFirstElement: false,
+                                 );
+                                },
+                              )
+                            ),
+                            Container(
                                 padding: const EdgeInsets.fromLTRB(25,5,10,5),
                                 decoration: BoxDecoration(
                                     border: Border.all(
@@ -663,7 +738,7 @@ class CheckOutDesktop extends StatelessWidget {
                                           style: TextButton
                                               .styleFrom(
                                             backgroundColor: Colors
-                                                .blueAccent,
+                                                .amber,
                                             textStyle: const TextStyle(
                                                 color: Colors
                                                     .black
@@ -680,6 +755,7 @@ class CheckOutDesktop extends StatelessWidget {
                                             ),
                                           ),
                                           onPressed: () {
+                                           // print(flag);
                                             payment(context);
                                           }
                                       ),
@@ -704,47 +780,93 @@ class CheckOutDesktop extends StatelessWidget {
     );
   }
 
-  login() {}
 
   void payment(context) {
-    String  order_id='';
+    print( "Flag $flag");
+    List _pid=[],quantity=[],sizes=[];
+    _pid.add(pid);
+    quantity.add(quan);
+    sizes.add(size);
+    String  orderId='';
+    String pstate;
+
+    var now = DateTime.now();
+    var formatterTime = DateFormat('hh:mm a');
+    String actualTime = formatterTime.add_d().add_yMMM().format(now);
+   // print(actualTime);
     final random = Random();
     for(int i = 0; i < 7; i++) {
-      order_id = order_id + random.nextInt(9).toString();
+      orderId = orderId + random.nextInt(9).toString();
     }
+    var orderRef= FirebaseFirestore.instance.collection("Orders").doc(FirebaseAuth.instance.currentUser!.uid);
 
-    addref.set(
+    var deleteRef= FirebaseFirestore.instance.collection("ShoppingCart").doc(FirebaseAuth.instance.currentUser!.uid);
+    var adminOrder= FirebaseFirestore.instance.collection("AdminOrders");
+    if(flag==1){
+       pstate='COD';
+    }else{
+      pstate='Online';
+
+    }
+    orderRef.collection(FirebaseAuth.instance.currentUser!.uid.toString()).doc(orderId).set(
         {
+          "or_dtime":actualTime,
+          "payment":"paymentId",
           "name":nameController.text.trim(),
+          "phone":FirebaseAuth.instance.currentUser!.phoneNumber,
           "flatno":flatnoController.text.trim(),
           "address":addressController.text.trim(),
-          "landmark":landmarkController.text.trim(),
           "city":cityController.text.trim(),
+          "landmark":landmarkController.text.trim(),
           "state":stateController.text.trim(),
           "pincode":pinController.text.trim(),
-        }
-    ).whenComplete(() =>{
+          "pid":_pid,
+          "order_no":orderId,
+          "size":sizes,
+          "color":"",
+          "quantity":quantity,
+          "image":image,
+          "or_status": "placed",
+           "pay_state":pstate,
 
-      order_ref.collection(FirebaseAuth.instance.currentUser!.uid.toString()).doc(order_id).set(
+          //"product_state":
+        }).whenComplete(() => {
+      deleteRef.collection(FirebaseAuth.instance.currentUser!.uid).doc(pid).delete(),
+      adminOrder.doc(orderId).set(
           {
+            "or_dtime":actualTime,
+            "payment":"",
             "name":nameController.text.trim(),
-            "phone":phoneController.text.trim(),
+            "phone":FirebaseAuth.instance.currentUser!.phoneNumber,
             "flatno":flatnoController.text.trim(),
             "address":addressController.text.trim(),
             "city":cityController.text.trim(),
+            "landmark":landmarkController.text.trim(),
             "state":stateController.text.trim(),
             "pincode":pinController.text.trim(),
-            "pid":pid,
-            "image":image,
-            "order_no":order_id,
-            "size":size,
+            "pid":_pid,
+            "order_no":orderId,
+            "size":sizes,
             "color":"",
-            "quantity":quan,
-            "pay_state":"COD",
-            //"product_state":
-          }).whenComplete(() => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LandingPage())),
-      }),
+            "quantity":quantity,
+            "image":image,
+            "or_status": "Pending",
+            "userID":FirebaseAuth.instance.currentUser!.uid,
+            "pay_state":pstate,
+            "product_state":""
+          })
+
+    }).whenComplete(() =>  {
+
+      if(flag==1){
+         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const ThankYouPage())),
+
+      }else if(flag==0){
+        print("_________Thankyou  Page_______________after Order Create_____________"),
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Webpayment(name: nameController.text.trim(),price:total, orderId: orderId,)))
+
+      }
+
     });
 
   }

@@ -1,9 +1,10 @@
+//@dart=2.9
 import 'package:flutter/material.dart';
 
 import '../../../constants.dart';
 
 class ColorAndSize extends StatelessWidget {
-  ColorAndSize( {Key? key}) : super(key: key);
+  ColorAndSize( {Key key}) : super(key: key);
 
 
   @override
@@ -37,7 +38,7 @@ class ColorAndSize extends StatelessWidget {
 class ColorDot extends StatelessWidget {
   final Color color;
   final bool isSelected;
-  const ColorDot({Key? key, required this.color,  this.isSelected=false}) : super(key: key);
+  const ColorDot({Key key,  this.color,  this.isSelected=false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
