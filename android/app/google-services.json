@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "785123700889",
-    "firebase_url": "https://as-fashion-1059d-default-rtdb.firebaseio.com",
-    "project_id": "as-fashion-1059d",
-    "storage_bucket": "as-fashion-1059d.appspot.com"
+    "project_number": "76605639865",
+    "firebase_url": "https://as-fashion-cf556-default-rtdb.firebaseio.com",
+    "project_id": "as-fashion-cf556",
+    "storage_bucket": "as-fashion-cf556.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785123700889:android:554e8853d04757cc188808",
+        "mobilesdk_app_id": "1:76605639865:android:2cccc4c3e124634e931f68",
         "android_client_info": {
-          "package_name": "com.yadavtechnicalcorp.asfashion"
+          "package_name": "com.yadavtechnical.adminpanel"
         }
       },
       "oauth_client": [
         {
-          "client_id": "785123700889-1d06fjpkdkk72kconos1aoe53u0bapa6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yadavtechnicalcorp.asfashion",
-            "certificate_hash": "4f1b0e46a5e515ca89799fb81c9e7ba90bbded11"
-          }
-        },
-        {
-          "client_id": "785123700889-e9r04dbn7cp92gs4il6o9c67ce2i0ea9.apps.googleusercontent.com",
+          "client_id": "76605639865-96u74u7ehcu1kecra3b5v6vc9gfpuvsh.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAunoBYWyh_Bta4_kq0KqiNLdxWKX8BHEo"
+          "current_key": "AIzaSyDgaLs9D9zpFp67b8EHEkYBWUVdaZB2bFM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "785123700889-e9r04dbn7cp92gs4il6o9c67ce2i0ea9.apps.googleusercontent.com",
+              "client_id": "76605639865-96u74u7ehcu1kecra3b5v6vc9gfpuvsh.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -45,35 +37,27 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785123700889:android:6f32cb3da56c9628188808",
+        "mobilesdk_app_id": "1:76605639865:android:d787504985a769b2931f68",
         "android_client_info": {
-          "package_name": "com.yadavtechnicalcorp.asfashion_upload"
+          "package_name": "com.yadavtechnicalcorp.asfashion"
         }
       },
       "oauth_client": [
         {
-          "client_id": "785123700889-leme7tbt884mg0o3vu9p1sn36toifmn5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yadavtechnicalcorp.asfashion_upload",
-            "certificate_hash": "4f1b0e46a5e515ca89799fb81c9e7ba90bbded11"
-          }
-        },
-        {
-          "client_id": "785123700889-e9r04dbn7cp92gs4il6o9c67ce2i0ea9.apps.googleusercontent.com",
+          "client_id": "76605639865-96u74u7ehcu1kecra3b5v6vc9gfpuvsh.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAunoBYWyh_Bta4_kq0KqiNLdxWKX8BHEo"
+          "current_key": "AIzaSyDgaLs9D9zpFp67b8EHEkYBWUVdaZB2bFM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "785123700889-e9r04dbn7cp92gs4il6o9c67ce2i0ea9.apps.googleusercontent.com",
+              "client_id": "76605639865-96u74u7ehcu1kecra3b5v6vc9gfpuvsh.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

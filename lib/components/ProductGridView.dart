@@ -31,60 +31,59 @@ class _ProductGridViewState extends State<ProductGridView> {
   List<ProductModel> get productModel => _productModel;
   final List<ProductModel> _productModel = [];
   final Query dbRef =
-  FirebaseDatabase.instance.reference().child('Products').reference();
+  FirebaseDatabase.instance.reference().child('Products');
 
   @override
 
   Widget build(BuildContext context) {
-    print(s);
+   // print(s);
     return  SizedBox(
       height:double.maxFinite,
       
       child:FutureBuilder(
-        future: dbRef.get(),
+        future: dbRef.once(),
+
         builder: (context,AsyncSnapshot<DataSnapshot> snapshot){
-          if(snapshot.connectionState==ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator());
-          }if(snapshot.hasData){
-            _productModel.clear();
+          // _productModel.clear();
 
-            if(s==0){
-              Map<dynamic, dynamic> values = snapshot.data!.value;
-              values.forEach((key, values) {
-                _productModel.add(ProductModel.fromJson(values));
+          if(s==0){
+            Map<dynamic, dynamic> values = snapshot.data!.value;
+            values.forEach((key, values) {
+              _productModel.add(ProductModel.fromJson(values));
 
-              });
+            });
 
-            }else if(s==1){
-              _productModel.sort((a, b) => a.l_price.compareTo(b.l_price));
-              for(ProductModel p in _productModel) {
-                print(p.l_price);
-              }
+            print(_productModel[1]);
+          }else if(s==1){
+            _productModel.sort((a, b) => a.l_price.compareTo(b.l_price));
+            for(ProductModel p in _productModel) {
+              print(p.l_price);
             }
-            return AlignedGridView.count(
-                controller: ScrollController(),
-                //scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                crossAxisCount: 3,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5,
-                itemCount:_productModel.length,
-                itemBuilder: (context, index) {
+          }
+          return AlignedGridView.count(
+              controller: ScrollController(),
+              //scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              crossAxisCount: 3,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              itemCount:_productModel.length,
+              itemBuilder: (context, index) {
 
-                  var pri=_productModel[index].l_price-(_productModel[index].discount*_productModel[index].l_price)~/100;
+                var pri=_productModel[index].l_price-(_productModel[index].discount*_productModel[index].l_price)~/100;
 
-                  return GestureDetector(
-                    onTap: () {
-                      var pid=productModel[index].pid;
-                      Navigator.push(
+                return GestureDetector(
+                  onTap: () {
+                    var pid=productModel[index].pid;
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>  ProductDetails(pid,"Product Detail")));
-                      },
-                    child: Card(
-                      elevation: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(1),
+                  },
+                  child: Card(
+                    elevation: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(1),
                       child: Column(
                         children: [
                           ListView(
@@ -122,7 +121,7 @@ class _ProductGridViewState extends State<ProductGridView> {
                                                 ),
                                               ),
                                               const Padding(padding: EdgeInsets.zero),
-                                               Text(productModel[index].pname,
+                                              Text(productModel[index].pname,
                                                 textAlign:TextAlign.left,
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -168,13 +167,13 @@ class _ProductGridViewState extends State<ProductGridView> {
                                       right: 0,
                                       child: Column(
                                         children: [
-                                    IconButton(
+                                          IconButton(
                                             onPressed:() {
                                               if (kDebugMode) {
                                                 print(index);
                                               }
                                               setState(() {
-                                               // fav[index]=true;
+                                                // fav[index]=true;
                                               });
                                               _wishList(index);
                                             },
@@ -194,14 +193,11 @@ class _ProductGridViewState extends State<ProductGridView> {
                           ),
                         ],
                       ),
-                      ),
                     ),
-                  );
-                }
-            );
-          }
-          print(1);
-          return const Center(child: CircularProgressIndicator(),);
+                  ),
+                );
+              }
+          );
         },
       ),
     );

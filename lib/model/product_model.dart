@@ -36,27 +36,31 @@ class ProductModel {
       });
 
   ProductModel.fromJson(Map<dynamic, dynamic> map) {
-    uploadtime=map['uploadtime'];
-    pid=map['pid'];
-    pname = map['pname'];
-    image = map['image'];
+
     brand = map['brand'];
-    discrip=map['descrip'];
+    category=map['category'];
+    collartyp=map['collartyp'];
     color = map['color'];
-    size = map['size'];
+    discrip=map['descrip'];
+    discount = map['discount'];
+    fabrictyp=map['fabrictyp'];
+
+    image = map['image'];
     keywords=map['keywords'];
     l_price = map['l_price'];
-    discount = map['discount'];
-    price = map['price'];
-    shipchrge=map['ship_char'];
-    stock_qty=map['stock_qty'];
-    category=map['category'];
-    subcategory=map['subcategory'];
-    fabrictyp=map['fabrictyp'];
     necktyp=map['necktyp'];
-    collartyp=map['collartyp'];
-    sleevtyp=map['sleevetyp'];
     pattertyp=map['patterntyp'];
+    pid=map['pid'];
+    pname = map['pname'];
+    price = map['price'];
+
+    shipchrge=map['ship_char'];
+    size = map['size'];
+    sleevtyp=map['sleevetyp'];
+    stock_qty=map['stock_qty'];
+    subcategory=map['subcategory'];
+    uploadtime=map['uploadtime'];
+
     //faddedtyp=map['faddedtyp'];
     //fittype=map['fittingtyp'];
 
